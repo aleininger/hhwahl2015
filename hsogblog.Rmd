@@ -1,0 +1,100 @@
+---
+title: 'Kurzanalyse zur #hhwahl2015'
+author: "Arndt Leininger, Hertie School of Governance, @a_leininger"
+date: "16. Februar 2015"
+output:
+  html_document:
+    lib_dir:
+    - libs
+    self_contained:
+    - no
+  pdf_document:
+    fig_caption:
+    - yes
+  word_document:
+  - default
+header-includes: \usepackage{booktabs} \usepackage{placeins} \usepackage[ngerman]{babel}
+---
+
+```{r, packages, echo=F, message=F, warning=F}
+library(ggplot2)
+library(texreg)
+library("FField")
+library(xtable)
+library("stargazer")
+
+source('multiplot.R')
+```
+
+```{r, data, echo=F, message=F, warning=F}
+load('data/data.RData')
+```
+
+```{r, cr_fig, echo=F, message=F, warning=F}
+source('analysis.R')
+```
+
+>*Die Wahl zur Hamburger Bürgerschaft 2015 verzeichnete ein neues Rekordtief der Wahlbeteiligung. Zugleich gelang der AfD erstmals der Einzug in ein westdeutsches Landesparlament. Eine Kurzanalyse der Wahlkreisdaten zeigt: Die Wahlbeteiligung war besonders dort niedrig wo die Arbeitslosigkeit hoch war, in diesen Wahlkreisen fand auch der deutlichste Rückgang der Wahlbeteiligung gegenüber 2011 statt. Die AfD scheint, ähnlich PEGIDA, besonders dort erfolgreich zu sein, wo wenige AusländerInnen leben.*
+
+# Wahlbeteiligung
+
+Viel Beachtung erhielt neben den Ergebnissen der Hamburger Bürgerschaftswahl am vergangenen Sonntag wieder die Wahlbeteiligung, die für Landtagswahlen typisch niedrig ausfiel: 56,9%. Dies ist ein minimaler Rückgang gegenüber der letzten Bügerschaftswahl in 2011 - damals betrug die Wahlbeteiligung 57,3%. Dabei ist Wahlbeteiligung sehr ungleich über die Stadtgebiete verteilt - von `r max(d$to)`% im Wahlkreis `r as.character(d$wbezirk[which(d$to == max(d$to))])` zu `r min(d$to)`% im Wahlkreis `r as.character(d$wbezirk[which(d$to == min(d$to))])` 
+(Standardabweichung: `r round(sqrt(sum((d$to-mean(d$to))^2)/ncol(d)),1)`%-Punkte). 
+
+Dabei zeigt sich erneut, dass die Wahlbeteiligung stark an die sozio-ökonomischen Gegebenheiten eines Wahlkreises gebunden ist. In sozial schwächeren Stadtgebieten fiel die Wahlbeteiligung erneut niedriger aus. Je höher die Arbeitslosigkeit (in % der 15- bis 65-Jährigen) in einem Wahlbezirk war, desto niedriger fiel die Wahlbeteiligung aus. Die Arbeitslosenrate korreliert extrem stark mit der Wahlbeteiligung (Abb. 1). So lässt sich mit einem einfachen bivariaten Regressionsmodel (Tab. 1) ganze 85% der Varianz in der Wahlbeteiligung erklären. Ein substantiell ählicher Zusammenhang ergibt sich, wenn alternativ der Anteil der LeistungempfängerImmen nach SGBII an der Gesamtbevölkerung in Betracht gezogen wird. Entsprechend besteht ebenso ein starker bivariater Zusammenhang zwischen dem  Durchschnittlichen Einkommen je Steuerpflichtigen in einem Wahlkreis und der dortigen Wahlbeteiligung.
+
+```{r, fToArbeit, echo=F, fig.cap='Wahlbteiligung (auf der Y-Achse) und Arbeitslosigkeit (auf der X-Achse)'}
+print(fToArbeit)
+```
+
+Auch der Rückgang der Wahlbeteiligung ist ungleich über die Stadt verteilt. In einigen Stadtgebieten stieg die Wahlbeteiligung sogar während sie in anderen Gebieten sank. Am stärksten stieg sie im Wahlkreis  `r d$wbezirk[which((d$to-d$to11) == max((d$to-d$to11)))]` ( `r max(d$to-d$to11)`%-Punkte). Schlusslicht war erneut der Wahlkreis `r d$wbezirk[which((d$to-d$to11) == min((d$to-d$to11)))]` ( `r min(d$to-d$to11)`%-Punkte) Rückgang der Wahlbeteiligung zeigt sich ein ähnliches Muster. Dieser war besonders in sozial schwächeren Stadtvierteln gegenüber 2011 nochmals niedriger (Abb. 2). Der Zusammenhang ist zwar schwächer, jedoch auch statistisch und substantiell signifikant (Tab. 1).
+
+```{r, fDifToArbeit, echo=F, fig.cap='Veränderung der Wahlbeteiligung 2011 zu 2015 in %-Punkten (auf der Y-Achse) und Arbeitslosigkeit (auf der X-Achse)'}
+print(fDifToArbeit)
+```
+
+
+# AfD
+
+Neben der Wahlbeteiligung lag ein besonderes Augenmerk bei dieser Wahl auf der neuen Partei Alternative für Deutschland (AfD). Die AfD in Hamburg wurde für einen rechtspopulistischen Wahlkampf kritisiert. So warnte etwa der AfD-Spitzenkandidat Kruse vor einem "Vordringen islamischer Eigenarten" ([SZ, 12.01.2015](http://www.sueddeutsche.de/politik/alternative-fuer-deutschland-in-hamburg-wahlkampf-mit-islamkritik-1.2300461)). Die AfD schien in Hamburg, wie die OrganisatorInnen der PEGIA-Bewegung, auf die Angst einiger BürgerInnen vor dem Fremden zu setzen. Deren montägliche Demonstrationen schienen besonders in Orten, in denen wenige Menschen mit Migrationshintergrund leben, stark zu sein. In der Tat scheinen Hamburger AfD-WählerInnen ähnliche Sorgen umzutreiben wie PEGIDA-TeilnehmerInnen. So gaben in einer Umfrage des Instituts infratest dimap für die ARD die Pluralität der AfD-WählerInnen (33%) an, das Thema "Ausländer / Zunwanderung" sei für sie ein wichtiges Thema gewesen. 59% der AfD-WählerInnen (gegenüber 23% im Rest der WählerInnenschaft) stimmten der Aussage zu "Hamburg hat zu viele Flüchtlinge" ([ARD, o.D.](http://wahl.tagesschau.de/wahlen/2015-02-15-LT-DE-HH/umfrage-afd.shtml)). Es liegt also der Schluss nahe, dass die AfD, analog zur PEGIDA-Bewegung, daher besonders in Stadtteilen mit geringer migrantischer Bevölkerung erfolgreich war.
+
+```{r, fAfdAuslanderArbeit, echo=F, message=F, warning=F, fig.cap='Erste Grafik: AfD-Stimmanteil und Ausländeranteil. Zweite Grafik: AfD-Stimmanteil und Arbeitslosigkeit.'}
+multiplot(fAfdAuslander, fAfdArbeit)
+```
+
+Ein solcher Zusammenhang ist, zumindest auf Basis der Wahlkreisdaten, nicht offensichtlich. Es besteht kein bivariater Zusammenhang zwischen dem Anteil der in einem Wahlkreis lebenden Bürger ohne deutsche Staatsbürgerschaft und dem Stimmanteil der AfD (Abb. 3, Tab. 1). In der Tat ergibt sich sogar ein schwacher statistisch nicht signifikanter positiver Zusammenhang. 
+
+Jedoch ist Hamburg eine Stadt mit vielen BürgerInnen mit Migrationshintergrund mit oder ohne deutsche Staatsbürgerschaft. Dabei leben  diese vornehmlich in sozial schwächeren Wohngebieten (r = `r round(cor(d$arbeitslosigkeit, d$auslaender_innen), 2)` für Arbeitslosenrate und AusländerInnenanteil). Arbeitslosigkeit korreliert positiv, und statistisch signifikant, mit dem Stimmanteil der AfD (Abb. 3, Tab. 1) - ein Hinweis auf das Protestwählerpotential der AfD.
+
+Kontrolliert man für die Arbeitslosigkeit in einem Wahlkreis ergibt sich weiterhin ein positiver Zusammenhang zwischen der Arbeitslosenrate und dem Stimmanteil der AfD. Weitaus interessanter jedoch: es stellt sich ebenso eine signifikant negative partielle Korrelation zwischen dem Ausländeranteil und dem Stimmanteil der AfD ein (Abb. 4, Tab. 1). 
+
+```{r, fAfdArbeit, echo=F, fig.cap='Text', fig.cap='Partieller Regressionsplot: AfD-Stimmanteil und Ausländeranteil unter Kontrolle für die Arbeitslosenrate.'}
+print(fAfdAuslanderArbeit)
+```
+
+Kontrolliert man also für die Arbeitslosenrate ergibt sich ein negativer Zusammenhang zwischen dem Ausländeranteil in einem Wahlkreis und dem dort erzielten Ergebnis der AfD. Dies würde die These bestätigen, dass der Erfolg der AfD, ähnlich dem der PEGIDA, besonders dort groß ist wo wenige BürgerInnen ohne deutsche Staatsbürgerschaft leben. 
+
+Dieses Ergebnis ist jedoch mit Vorsicht zu genießen. Verwendet man statt des Ausländeranteils den Anteil der BürgerInnen mit Migrationshintergrund so ergibt sich weder für diese Variable noch für die Arbeitslosenrate ein Zusammenhang zum Wahlergebnis der AfD. Die hier dargestellten ersten Ergebnisse bedürfen der Substantiierung durch weitere Analysen. Eine Erforschung der Erfolgsbedingungen der AfD im Besonderen und rechtspoulistischer Parteien im Allgemeinen ist ein politikwissenschaftlich wie gesellschaftlich wichtiges Forschungsfeld.
+
+
+*[Arndt Leininger](http://www.hertie-school.org/facultyandresearch/faculty-researchers/phd-students-doctoral-programme-in-governance/more-about-out-phd-students/arndt-leininger/) ist Doktorand an der Hertie School of Governance. Seine Forschungsschwerpunkte sind Direkte Demokratie, Vergleichende Politikwissenschaft, Repräsentation und Wahlforschung. Arndt hat einen MSc in Political Science and Political Economy der London School of Economics and Political Science und einen Bachelorabschluss in Politikwissenschaft der Freien Universität Berlin. Zwischen 2012 und 2013 hat er als Wissenschaftlicher Mitarbeiter von Sven-Christian Kindler, MdB gearbeitet.*
+
+*Alle dieser Analyse zu Grunde liegenden Materialien sind verfügbar auf: https://github.com/aleininger/hhwahl2015*
+
+# Appendix
+
+
+```{r, models, echo=F, results='asis'}
+stargazer(mToArbeit, mDifToArbeit, mAfdAuslander, mAfdArbeit, mAfdAuslanderArbeit,
+          type = 'html', column.labels = c('Wahlbeteiligung', '$Veränd. Wahlb.', 'AfD', 'AfD', 'AfD'), covariate.labels = c('(Konstante)', 'Arbeitslosigkeit', 'Ausländeranteil'),
+          order = c(2,3,1))
+
+# htmlreg(l = list(mToArbeit, mDifToArbeit, mAfdAuslander, mAfdArbeit, mAfdAuslanderArbeit), custom.coef.names = c('(Konstante)', 'Arbeitslosigkeit', 'Ausländeranteil'), reorder.coef = c(2,3,1), bold = 0.05, custom.model.names = c('Wahlbeteiligung', '$\\Delta$Wahlbeteiligung', 'AfD', 'AfD', 'AfD'), custom.gof.names = c(NA, 'Angep. R²', 'N'), caption = 'Regressionsmodelle. Abhängige Variablen sind die Wahlbeteiligung in \\%, die Veränderung der Wahlbeteiligung im Vergleich zu 2011 in \\%-Punkten, sowie der Stimmanteil der AfD in \\%.',
+#         doctype = F)
+```
+
+```{r, datatable, echo=F, results='asis'}
+print(xtable(t, caption = 'In der vorliegenden Analyse verwendete Daten. Umfassendere Daten im GitHub Repository.'), type = 'html',
+      booktabs = T, include.rownames = F, comment = F, size = 'small')
+```
+
